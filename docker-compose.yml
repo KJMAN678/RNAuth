@@ -1,0 +1,12 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    ports:
+      - "8081:8081"
+    environment:
+      EXPO_USE_METRO_WEB: "1"  
+    command: npx expo start -c --web
+    volumes:
+      - ./frontend:/app/frontend
+      - /app/frontend/node_modules
