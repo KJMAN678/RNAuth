@@ -75,12 +75,20 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           setToken(storedToken);
           setUser(userData);
           setIsAuthenticated(true);
+          
+          setTimeout(() => {
+            logout();
+          }, TOKEN_EXPIRY_MINUTES * 60 * 1000);
+        } else {
+          setIsAuthenticated(false);
+          await clearAuthData();
         }
       } else {
+        setIsAuthenticated(false);
         await clearAuthData();
       }
     } catch (error) {
-      console.error('認証状態の復元に失敗:', error);
+      setIsAuthenticated(false);
       await clearAuthData();
     } finally {
       setIsLoading(false);
@@ -112,7 +120,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return true;
     } catch (error) {
-      console.error('ログインに失敗:', error);
       return false;
     }
   };
@@ -146,7 +153,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       return true;
     } catch (error) {
-      console.error('サインアップに失敗:', error);
       return false;
     }
   };
@@ -158,7 +164,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setToken(null);
       setIsAuthenticated(false);
     } catch (error) {
-      console.error('ログアウトに失敗:', error);
     }
   };
 
@@ -168,10 +173,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         return false;
       }
 
-      console.log(`パスワードリセットメールを ${email} に送信しました（モック実装）`);
       return true;
     } catch (error) {
-      console.error('パスワードリセットに失敗:', error);
       return false;
     }
   };

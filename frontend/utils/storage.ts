@@ -32,6 +32,7 @@ const storage = {
     await nativeSecureStore!.deleteItemAsync(key);
   },
 } as const;
+
 import { AUTH_CONFIG } from './auth';
 
 export interface StoredUser {
@@ -75,7 +76,6 @@ export const AuthStorage = {
         user,
       };
     } catch (error) {
-      console.error('認証データの取得に失敗:', error);
       return {
         token: null,
         expiryTime: null,
@@ -104,9 +104,11 @@ export const AuthStorage = {
         return false;
       }
 
-      return Date.now() < expiryTime;
+      const currentTime = Date.now();
+      const isValid = currentTime < expiryTime;
+      
+      return isValid;
     } catch (error) {
-      console.error('トークン検証に失敗:', error);
       return false;
     }
   },
