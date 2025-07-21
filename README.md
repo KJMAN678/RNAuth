@@ -65,6 +65,8 @@ $ http://localhost:8081/ がフロントエンドのURL
 ### 参考
 
 - [【2025年最新版】Expo/React Nativeの開発環境を構築する ExpoとExpo Routerをセットアップ](https://zenn.dev/arafipro/books/rn-2025-newest-expo-setup/viewer/02_expo-setup)
+- [Expo Routerのレイアウトの仕組みを理解し、より実践的なナビゲーションを構築しよう](https://codezine.jp/article/detail/21710)
+- [Expo Router notation](https://docs.expo.dev/router/basics/notation/)
 
 ### Expo Go アプリで接続
 
