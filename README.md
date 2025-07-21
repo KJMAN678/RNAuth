@@ -68,6 +68,7 @@ $ http://localhost:8081/ がフロントエンドのURL
 - [Expo Routerのレイアウトの仕組みを理解し、より実践的なナビゲーションを構築しよう](https://codezine.jp/article/detail/21710)
 - [Expo Router notation](https://docs.expo.dev/router/basics/notation/)
 - [SecureStoreがWebで動作しない](https://github.com/expo/expo/issues/7744)
+- [Metro ES モジュールの解像度#36551 と互換性のないライブラリ  この変更の影響を受ける場合は、Metro 構成で package.json:exports を無効にすることで非互換性を回避できます](https://github.com/expo/expo/discussions/36551)
 
 ### Expo Go アプリで接続
 
