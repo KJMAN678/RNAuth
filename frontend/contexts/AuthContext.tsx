@@ -64,25 +64,41 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const initializeAuth = async (): Promise<void> => {
     try {
+      console.log('🚀 [Auth] 認証初期化開始');
       setIsLoading(true);
       
       const isValid = await AuthStorage.isTokenValid();
+      console.log('🔍 [Auth] トークン検証結果:', isValid);
       
       if (isValid) {
         const { token: storedToken, user: userData } = await AuthStorage.getAuthData();
+        console.log('📦 [Auth] 保存データ確認:', { hasToken: !!storedToken, hasUser: !!userData });
         
         if (storedToken && userData) {
+          console.log('✅ [Auth] 認証データ有効 - ログイン状態に設定');
           setToken(storedToken);
           setUser(userData);
           setIsAuthenticated(true);
+          
+          setTimeout(() => {
+            logout();
+          }, TOKEN_EXPIRY_MINUTES * 60 * 1000);
+        } else {
+          console.log('❌ [Auth] 認証データ不完全 - ログアウト状態に設定');
+          setIsAuthenticated(false);
+          await clearAuthData();
         }
       } else {
+        console.log('❌ [Auth] トークン無効 - ログアウト状態に設定');
+        setIsAuthenticated(false);
         await clearAuthData();
       }
     } catch (error) {
-      console.error('認証状態の復元に失敗:', error);
+      console.error('❌ [Auth] 認証状態の復元に失敗:', error);
+      setIsAuthenticated(false);
       await clearAuthData();
     } finally {
+      console.log('🏁 [Auth] 認証初期化完了 - isLoading: false, isAuthenticated:', false);
       setIsLoading(false);
     }
   };

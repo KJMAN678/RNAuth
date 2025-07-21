@@ -32,6 +32,7 @@ const storage = {
     await nativeSecureStore!.deleteItemAsync(key);
   },
 } as const;
+
 import { AUTH_CONFIG } from './auth';
 
 export interface StoredUser {
@@ -60,14 +61,27 @@ export const AuthStorage = {
     user: StoredUser | null;
   }> {
     try {
+      console.log('📦 [Storage] 認証データ取得開始');
       const [token, expiry, userJson] = await Promise.all([
         storage.getItem(AUTH_CONFIG.STORAGE_KEYS.AUTH_TOKEN),
         storage.getItem(AUTH_CONFIG.STORAGE_KEYS.TOKEN_EXPIRY),
         storage.getItem(AUTH_CONFIG.STORAGE_KEYS.USER),
       ]);
 
+      console.log('📦 [Storage] 生データ:', { 
+        token: token ? token.substring(0, 10) + '...' : null, 
+        expiry, 
+        userJson: userJson ? userJson.substring(0, 50) + '...' : null 
+      });
+
       const expiryTime = expiry ? parseInt(expiry) : null;
       const user = userJson ? JSON.parse(userJson) : null;
+
+      if (user) {
+        console.log('📦 [Storage] ユーザーデータパース成功:', { userId: user?.id, email: user?.email });
+      }
+
+      console.log('📦 [Storage] 認証データ取得完了:', { hasToken: !!token, hasUser: !!user, expiryTime });
 
       return {
         token,
@@ -75,7 +89,7 @@ export const AuthStorage = {
         user,
       };
     } catch (error) {
-      console.error('認証データの取得に失敗:', error);
+      console.error('❌ [Storage] 認証データの取得に失敗:', error);
       return {
         token: null,
         expiryTime: null,
@@ -98,15 +112,23 @@ export const AuthStorage = {
 
   async isTokenValid(): Promise<boolean> {
     try {
+      console.log('🔍 [Storage] トークン検証開始');
       const { token, expiryTime } = await this.getAuthData();
       
+      console.log('🔍 [Storage] 取得データ:', { hasToken: !!token, hasExpiryTime: !!expiryTime, expiryTime });
+      
       if (!token || !expiryTime) {
+        console.log('❌ [Storage] トークンまたは有効期限が存在しません');
         return false;
       }
 
-      return Date.now() < expiryTime;
+      const currentTime = Date.now();
+      const isValid = currentTime < expiryTime;
+      console.log('🔍 [Storage] トークン検証結果:', { isValid, currentTime, expiryTime, diff: expiryTime - currentTime });
+      
+      return isValid;
     } catch (error) {
-      console.error('トークン検証に失敗:', error);
+      console.error('❌ [Storage] トークン検証に失敗:', error);
       return false;
     }
   },
