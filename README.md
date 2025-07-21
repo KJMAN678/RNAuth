@@ -65,4 +65,64 @@ $ http://localhost:8081/ がフロントエンドのURL
 ### 参考
 
 - [【2025年最新版】Expo/React Nativeの開発環境を構築する ExpoとExpo Routerをセットアップ](https://zenn.dev/arafipro/books/rn-2025-newest-expo-setup/viewer/02_expo-setup)
-- 
+
+### Expo Go アプリで接続
+
+- PC と スマホを同じWifiにつなぐ
+- 下記コマンド実行でWifiのIPアドレス (xxx.xxx.x.xxx) を確認
+```sh
+$ ipconfig getifaddr en0
+```
+- Expo Go に exp://xxx.xxx.x.xxx:8081 を入力
+
+## ファイル構成図
+
+```
+RNAuth/
+├── README.md                    # プロジェクトドキュメント
+├── docker-compose.yml           # Docker環境設定
+└── frontend/                    # React Native/Expoアプリケーション
+    ├── Dockerfile              # フロントエンドDocker設定
+    ├── app.json                # Expo設定ファイル
+    ├── package.json            # 依存関係・スクリプト定義
+    ├── package-lock.json       # 依存関係バージョン固定
+    ├── tsconfig.json          # TypeScript設定
+    ├── eslint.config.js       # ESLint設定
+    ├── babel.config.js        # Babel設定
+    ├── index.ts               # エントリーポイント
+    ├── app/                   # ページルーティング (Expo Router)
+    │   ├── _layout.tsx        # ルートレイアウト・認証プロバイダー
+    │   ├── (auth)/            # 認証関連画面グループ
+    │   │   ├── _layout.tsx    # 認証画面レイアウト
+    │   │   ├── login.tsx      # ログイン画面
+    │   │   ├── signup.tsx     # サインアップ画面
+    │   │   └── reset-password.tsx # パスワードリセット画面
+    │   ├── (protected)/       # 認証が必要な画面グループ
+    │   │   ├── _layout.tsx    # プロテクト画面レイアウト
+    │   │   └── profile.tsx    # プロフィール画面
+    │   └── (tabs)/           # タブナビゲーション画面グループ
+    │       ├── _layout.tsx   # タブレイアウト
+    │       ├── index.tsx     # ホーム画面
+    │       └── settings.tsx  # 設定画面
+    ├── components/           # 再利用可能コンポーネント
+    │   └── AuthGuard.tsx    # 認証ガード・未認証時リダイレクト
+    ├── contexts/            # React Context
+    │   └── AuthContext.tsx  # 認証状態管理・ログイン/ログアウト機能
+    ├── utils/               # ユーティリティ関数
+    │   ├── auth.ts          # 認証関連バリデーション・設定
+    │   └── storage.ts       # SecureStore認証データ永続化
+    ├── tests/               # テストファイル
+    │   └── sample.test.tsx  # サンプルテスト
+    └── assets/              # 画像・アイコンリソース
+        ├── adaptive-icon.png # Androidアダプティブアイコン
+        ├── favicon.png      # Webファビコン
+        ├── icon.png         # アプリアイコン
+        └── splash-icon.png  # スプラッシュ画面アイコン
+```
+
+### 主要機能
+- **認証システム**: ログイン・サインアップ・パスワードリセット
+- **セキュアストレージ**: トークンとユーザー情報の暗号化保存
+- **ルートガード**: 未認証ユーザーの自動リダイレクト
+- **タブナビゲーション**: ホーム・設定画面
+- **トークン期限管理**: 5分間の自動ログアウト
