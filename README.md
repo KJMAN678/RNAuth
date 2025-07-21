@@ -83,50 +83,78 @@ $ ipconfig getifaddr en0
 
 ```
 RNAuth/
-├── README.md                    # プロジェクトドキュメント
-├── docker-compose.yml           # Docker環境設定
-└── frontend/                    # React Native/Expoアプリケーション
-    ├── Dockerfile              # フロントエンドDocker設定
-    ├── app.json                # Expo設定ファイル
-    ├── package.json            # 依存関係・スクリプト定義
-    ├── package-lock.json       # 依存関係バージョン固定
-    ├── tsconfig.json          # TypeScript設定
-    ├── eslint.config.js       # ESLint設定
-    ├── babel.config.js        # Babel設定
-    ├── index.ts               # エントリーポイント
-    ├── app/                   # ページルーティング (Expo Router)
-    │   ├── _layout.tsx        # ルートレイアウト・認証プロバイダー
-    │   ├── (auth)/            # 認証関連画面グループ
-    │   │   ├── _layout.tsx    # 認証画面レイアウト
-    │   │   ├── login.tsx      # ログイン画面
-    │   │   ├── signup.tsx     # サインアップ画面
-    │   │   └── reset-password.tsx # パスワードリセット画面
-    │   ├── (protected)/       # 認証が必要な画面グループ
-    │   │   ├── _layout.tsx    # プロテクト画面レイアウト
-    │   │   └── profile.tsx    # プロフィール画面
-    │   └── (tabs)/           # タブナビゲーション画面グループ
-    │       ├── _layout.tsx   # タブレイアウト
-    │       ├── index.tsx     # ホーム画面
-    │       └── settings.tsx  # 設定画面
-    ├── components/           # 再利用可能コンポーネント
-    │   └── AuthGuard.tsx    # 認証ガード・未認証時リダイレクト
-    ├── contexts/            # React Context
-    │   └── AuthContext.tsx  # 認証状態管理・ログイン/ログアウト機能
-    ├── utils/               # ユーティリティ関数
-    │   ├── auth.ts          # 認証関連バリデーション・設定
-    │   └── storage.ts       # SecureStore認証データ永続化
-    ├── tests/               # テストファイル
-    │   └── sample.test.tsx  # サンプルテスト
-    └── assets/              # 画像・アイコンリソース
-        ├── adaptive-icon.png # Androidアダプティブアイコン
-        ├── favicon.png      # Webファビコン
-        ├── icon.png         # アプリアイコン
-        └── splash-icon.png  # スプラッシュ画面アイコン
+├── README.md                     # プロジェクトドキュメント
+├── docker-compose.yml            # Docker環境設定
+├── types/                        # TypeScript型定義
+│   └── async-storage.d.ts       # AsyncStorage型宣言
+└── frontend/                     # React Native/Expoアプリケーション
+    ├── Dockerfile               # フロントエンドDocker設定
+    ├── app.json                 # Expo設定ファイル
+    ├── package.json             # 依存関係・スクリプト定義
+    ├── package-lock.json        # 依存関係バージョン固定
+    ├── tsconfig.json           # TypeScript設定
+    ├── eslint.config.js        # ESLint設定
+    ├── babel.config.js         # Babel設定
+    ├── metro.config.js         # Metroバンドラー設定
+    ├── index.ts                # エントリーポイント
+    ├── app/                    # ファイルベースルーティング (Expo Router)
+    │   ├── _layout.tsx         # ルートレイアウト・認証プロバイダー
+    │   ├── (auth)/             # 認証関連画面グループ
+    │   │   ├── _layout.tsx     # 認証画面レイアウト
+    │   │   ├── login.tsx       # ログイン画面・バリデーション付き
+    │   │   ├── signup.tsx      # サインアップ画面・確認機能付き
+    │   │   └── reset-password.tsx # パスワードリセット機能
+    │   ├── (protected)/        # 認証必須画面グループ
+    │   │   ├── _layout.tsx     # AuthGuard付きレイアウト
+    │   │   └── profile.tsx     # ユーザープロフィール表示
+    │   └── (tabs)/            # タブナビゲーション画面グループ
+    │       ├── _layout.tsx    # タブナビゲーションレイアウト
+    │       ├── index.tsx      # ホーム画面・認証状態表示
+    │       └── settings.tsx   # 設定画面
+    ├── components/            # 再利用可能コンポーネント
+    │   └── AuthGuard.tsx     # ルート保護・未認証時リダイレクト
+    ├── contexts/             # React Context
+    │   └── AuthContext.tsx   # 認証状態管理・ログイン/ログアウト機能
+    ├── utils/                # ユーティリティ関数
+    │   ├── auth.ts          # 認証バリデーション・設定
+    │   └── storage.ts       # クロスプラットフォーム安全なストレージ
+    ├── tests/                # テストファイル
+    │   └── sample.test.tsx   # Jest設定・サンプルテスト
+    └── assets/               # 画像・アイコンリソース
+        ├── adaptive-icon.png  # Androidアダプティブアイコン
+        ├── favicon.png       # Webファビコン
+        ├── icon.png          # アプリアイコン
+        └── splash-icon.png   # スプラッシュ画面アイコン
 ```
 
 ### 主要機能
-- **認証システム**: ログイン・サインアップ・パスワードリセット
-- **セキュアストレージ**: トークンとユーザー情報の暗号化保存
+
+#### 🔐 認証システム
+- **完全な認証フロー**: ログイン・サインアップ・パスワードリセット
+- **フォームバリデーション**: メール形式・パスワード要件（6文字以上）
+- **モック実装**: トークン生成による認証シミュレーション
+- **エラーハンドリング**: ユーザーフレンドリーなエラーメッセージ
+
+#### 🛡️ セキュリティ機能
+- **セキュアストレージ**: SecureStore（ネイティブ）/ AsyncStorage（Web）
 - **ルートガード**: 未認証ユーザーの自動リダイレクト
-- **タブナビゲーション**: ホーム・設定画面
 - **トークン期限管理**: 5分間の自動ログアウト
+- **データ永続化**: アプリ再起動後もログイン状態維持
+
+#### 🧭 ナビゲーション
+- **ファイルベースルーティング**: Expo Routerによる直感的なルート設定
+- **グループ化ルート**: 認証画面・保護されたルート・タブナビゲーション
+- **タブナビゲーション**: ホーム・設定画面への簡単アクセス
+- **レスポンシブデザイン**: iOS・Android・Web対応
+
+#### ⚛️ 状態管理
+- **AuthContext**: React Contextによる認証状態の中央管理
+- **ローディング状態**: 認証初期化・操作中の視覚的フィードバック
+- **自動ログアウト**: トークン期限切れ時の自動ログアウト処理
+
+#### 🛠️ 開発環境
+- **TypeScript**: 完全な型安全性
+- **Docker統合**: コンテナ化された開発環境
+- **テスト設定**: Jest設定とサンプルテスト
+- **Linting**: ESLintによるコード品質管理
+- **Metro設定**: package.jsonエクスポート対応のカスタムバンドラー設定
